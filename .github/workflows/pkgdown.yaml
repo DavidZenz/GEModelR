@@ -1,0 +1,56 @@
+name: Package documentation
+
+on:
+  pull_request:
+  push:
+    branches: [master, main]
+
+permissions:
+  contents: read
+
+jobs:
+  build-site:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+
+      - name: Set up R
+        uses: r-lib/actions/setup-r@f9a764fea8d5c63df6ef9a5c7795bf7deb5d7e05
+        with:
+          r-version: release
+          use-public-rspm: true
+
+      - name: Set up Pandoc
+        uses: r-lib/actions/setup-pandoc@9f58233a78a2a9fd874714be10f8bba627233339
+
+      - name: Install package and documentation dependencies
+        uses: r-lib/actions/setup-r-dependencies@f9a764fea8d5c63df6ef9a5c7795bf7deb5d7e05
+        with:
+          packages: deps::.
+          cache: false
+
+      - name: Build source archive
+        run: R CMD build .
+
+      - name: Scan archive and build pkgdown site
+        run: Rscript --vanilla tools/ci/build-pkgdown-site.R
+
+      - name: Scan complete generated site tree
+        id: scan-site
+        run: node tools/ci/check-public-content.cjs --site "$RUNNER_TEMP/pkgdown-source/GEModelR/.pkgdown-site"
+
+      - name: Scan staged site artifact
+        id: scan-site-artifact
+        run: node tools/ci/check-public-content.cjs --artifact-dir "$RUNNER_TEMP/pkgdown-site"
+
+      - name: Upload pkgdown site artifact
+        if: steps.scan-site.outcome == 'success' && steps.scan-site-artifact.outcome == 'success'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: pkgdown-site
+          path: ${{ runner.temp }}/pkgdown-site
+          if-no-files-found: error
+          retention-days: 30

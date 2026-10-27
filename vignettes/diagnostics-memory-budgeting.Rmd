@@ -1,0 +1,136 @@
+---
+title: "Inspect diagnostics and budget sparse memory"
+author: "GEModelR maintainers"
+output:
+  rmarkdown::html_vignette:
+    toc: true
+vignette: >
+  %\VignetteIndexEntry{Inspect diagnostics and budget sparse memory}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+The sparse engine can estimate its memory needs before a solve, enforce a
+per-model memory budget, and retain additional solve diagnostics when asked.
+The examples below use the small generated fixture shared with the other
+vignettes.
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  warning = FALSE,
+  message = FALSE
+)
+helperPath = if (file.exists("helpers.R")) {
+  "helpers.R"
+} else {
+  file.path("vignettes", "helpers.R")
+}
+source(helperPath, local = knitr::knit_global())
+fixture = makeFirstSimulationFixture()
+model = GEModelR::GEModel$new()
+model$loadTablo(fixture$tabloPath)
+model$setClosure("tax")
+model$loadData(fixture$inputData, engine = "sparse")
+model$setShocks(setNames(4, 'tax["south"]'))
+```
+
+## Estimate before solving
+
+`estimateMemory()` reports an estimate for the selected engine and whether
+post-simulation work is included. Use it as planning information for the
+model and runtime you are about to execute:
+
+```{r estimate-memory}
+memoryEstimate = model$estimateMemory(engine = "sparse", postsim = FALSE)
+print(memoryEstimate)
+```
+
+The public estimate describes generic sparse storage. During `solveModel()`,
+the selected structured backend additionally accounts for its partition:
+dense regional/global matrices and factors, simultaneously live copies,
+coupling transfers, local factor fill, Arnoldi vectors and worker scratch.
+The budget guard uses this fuller estimate before assembly. Counts from the
+original partition can overestimate storage later removed by elimination.
+Factor fill and allocator overhead remain estimates; this is not a hard cap
+on process RSS. Detailed solve diagnostics retain the component estimates.
+
+## Set a memory budget
+
+`setMemoryBudget(bytes)` stores an instance-level sparse budget. A solve fails
+during preflight if its estimate exceeds the available budget. The example
+sets a one-gibibyte budget, ample for this tiny fixture. The `memory_budget`
+argument to `solveModel()` can instead set or override the budget for one
+solve.
+
+```{r set-memory-budget}
+model$setMemoryBudget(1024^3)
+```
+
+## Request compact output and detailed diagnostics
+
+Compact output avoids materializing the full compatibility output structure.
+By default, `diagnostics = FALSE` stores the compact stable outcome envelope.
+Set `diagnostics = TRUE` when you also need residual history, timings,
+allocation and capability evidence, detailed cleanup, and memory estimates.
+
+```{r solve-with-diagnostics}
+model$solveModel(
+  iter = 1,
+  steps = 1,
+  engine = "sparse",
+  backend = "Matrix",
+  postsim = FALSE,
+  output = "compact",
+  variables = "q",
+  diagnostics = TRUE
+)
+model$compactOutput
+```
+
+The top-level diagnostics fields include the requested runtime and backend,
+the implementation selected, and the solve status:
+
+```{r inspect-diagnostics}
+model$lastDiagnostics[c(
+  "schema_version", "engine", "requested_backend", "implementation", "status"
+)]
+```
+
+For the stable field list and failure statuses, see the
+```{r package-help-link, results='asis', echo=FALSE}
+# pkgdown sets IN_PKGDOWN while rendering articles.
+helpPage = if (identical(Sys.getenv("IN_PKGDOWN"), "true")) {
+  "../reference/GEModelR-package.html"
+} else {
+  "../html/GEModelR-package.html"
+}
+cat(sprintf("[GEModelR package help](%s)", helpPage))
+```
+Diagnostics add evidence to the record; they do not change which backend was
+requested or permit fallback.
+
+Every accepted sparse solution passes the full-system check
+$\lVert A x-b\rVert_2 / \max(1,\lVert b\rVert_2)$ at the documented
+residual tolerance. Scaled arithmetic forms this ratio without overflowing
+the denominator. Invalid products or non-finite residual entries fail before
+state is committed. An absolute L2 diagnostic can be infinite when its exact
+value exceeds the double range; acceptance still requires a finite scaled
+relative residual. Small RHS vectors retain the existing absolute-tolerance
+semantics.
+
+The C++ backend carries only structural metadata between solves. Its keys
+include index/closure layout, sparse pattern, grouping and batching settings.
+Numeric factors and regional transfers belong to one solve and are rebuilt
+after coefficient changes. Prepared sparse factors own validated snapshots
+and reusable scratch; cleanup releases native handles before results are
+committed or a failure is returned. Matrix references needed for acceptance
+are released before simulation updates.
+
+With detailed diagnostics, `phase_allocations` reports nonnegative changes in
+sampled R heap usage. Samples use full garbage collections and R's reported
+MiB, including the platform-specific size of node cells. `peak_gc_bytes` is
+the largest of those phase samples across the solve; the same samples are
+reused for progress and final diagnostics. These rounded heap estimates do
+not include all native allocations and are distinct from process peak RSS.

@@ -1,0 +1,66 @@
+url: https://davidzenz.github.io/GEModelR
+destination: .pkgdown-site
+
+template:
+  bootstrap: 5
+
+home:
+  title: GEModelR
+  description: >
+    Parse GEMPACK-style TABLO models and solve them in R with legacy and
+    sparse engines.
+  sidebar: false
+
+search:
+  exclude:
+    - authors.html
+    - CONTRIBUTORS.html
+    - GOVERNANCE.html
+    - news/index.html
+
+llm-docs: false
+
+footer:
+  structure:
+    left: pkgdown
+    right: package
+
+navbar:
+  structure:
+    left: [home, reference, articles, migration]
+  components:
+    articles:
+      text: Guides
+      menu:
+        - text: User guides
+        - text: First simulation
+          href: articles/first-simulation.html
+        - text: Legacy-to-sparse migration
+          href: articles/legacy-to-sparse.html
+        - text: Backend selection
+          href: articles/backend-selection.html
+        - text: Diagnostics and memory budgeting
+          href: articles/diagnostics-memory-budgeting.html
+        - text: External full-scale benchmarking
+          href: articles/external-full-scale-benchmarking.html
+        - text: Maintainer guides
+        - text: Architecture
+          href: articles/architecture.html
+        - text: Contributing
+          href: articles/contributing.html
+    migration:
+      text: Migration
+      href: articles/legacy-to-sparse.html
+
+articles:
+  - title: User guides
+    contents:
+      - first-simulation
+      - legacy-to-sparse
+      - backend-selection
+      - diagnostics-memory-budgeting
+      - external-full-scale-benchmarking
+  - title: Maintainer guides
+    contents:
+      - architecture
+      - contributing

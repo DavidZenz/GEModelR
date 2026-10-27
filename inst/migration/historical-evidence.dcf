@@ -1,0 +1,129 @@
+Schema: gemodelr-historical-evidence-v1
+Record-Id: phase02-expectations
+Category: immutable-phase02-evidence
+Path: tests/testthat/baselines/phase02/expectations.csv
+Region: whole-file
+Digest-Algorithm: sha256
+Byte-Digest: 0efdc7e3093be07e89dc5f5335b7732e8a21ca0dcf0b41ca030161ff9855fa2c
+Identity-Mode: raw
+Predecessor-Identity: tabloToR
+Review-State: reviewed
+Contract-State: locked
+Rationale: Accepted Phase 02 numerical expectations remain predecessor evidence.
+
+Schema: gemodelr-historical-evidence-v1
+Record-Id: phase02-tolerances
+Category: immutable-phase02-evidence
+Path: tests/testthat/baselines/phase02/tolerances.csv
+Region: whole-file
+Digest-Algorithm: sha256
+Byte-Digest: b8aad6ea259d8b4629e296205902b9b280a5702286bbbf06a798c55cd0fc6c16
+Identity-Mode: raw
+Predecessor-Identity: tabloToR
+Review-State: reviewed
+Contract-State: locked
+Rationale: Accepted Phase 02 numerical tolerances remain predecessor evidence.
+
+Schema: gemodelr-historical-evidence-v1
+Record-Id: phase02-fingerprints
+Category: immutable-phase02-evidence
+Path: tests/testthat/baselines/phase02/fingerprints.dcf
+Region: whole-file
+Digest-Algorithm: sha256
+Byte-Digest: 49ed115d2cfac35b11b04e86421c236686e132abcb5d8f40d58aafd69ce9b2b0
+Identity-Mode: raw
+Predecessor-Identity: tabloToR
+Review-State: reviewed
+Contract-State: locked
+Rationale: Accepted Phase 02 package and source fingerprints remain predecessor evidence.
+
+Schema: gemodelr-historical-evidence-v1
+Record-Id: phase02-acceptance
+Category: immutable-phase02-evidence
+Path: tests/testthat/baselines/phase02/ACCEPTANCE.md
+Region: whole-file
+Digest-Algorithm: sha256
+Byte-Digest: 4e8ab0c70d662abe8a1328a5c66f76938a3d610b630de400a057af14153f7113
+Identity-Mode: raw
+Predecessor-Identity: tabloToR
+Review-State: reviewed
+Contract-State: locked
+Rationale: Human-reviewed Phase 02 acceptance remains byte-identical.
+
+Schema: gemodelr-historical-evidence-v1
+Record-Id: gtap12a-cpp-results
+Category: immutable-benchmark-evidence
+Path: benchmarks/GTAP12A_CPP_RESULTS.md
+Region: whole-file
+Digest-Algorithm: sha256
+Byte-Digest: a4eb96dd86ad2ee4ead588fe7b275e7f5916f5de6bd1d59ba0587f9cec3b48ca
+Identity-Mode: raw
+Predecessor-Identity: tabloToR
+Review-State: reviewed
+Contract-State: locked
+Rationale: Reviewed full-scale GTAP result remains historical predecessor evidence.
+
+Schema: gemodelr-historical-evidence-v1
+Record-Id: protected-gemodel
+Category: protected-numerical-source
+Path: R/GEModel.R
+Region: identity-normalized-whole-file
+Digest-Algorithm: sha256
+Byte-Digest: bf7d7d18422b4a8e785500e474bf1e95b1d15a06613c26d93a003f8a2e8fe7a8
+Identity-Mode: exact-map-v1
+Predecessor-Identity: tabloToR
+Review-State: reviewed
+Contract-State: locked
+Rationale: Current committed orchestration baseline after API and lifecycle fixes; resealed by the source identity review, with original Phase 02 evidence unchanged.
+
+Schema: gemodelr-historical-evidence-v1
+Record-Id: protected-sparse-elimination
+Category: protected-numerical-source
+Path: R/sparseElimination.R
+Region: identity-normalized-whole-file
+Digest-Algorithm: sha256
+Byte-Digest: 95599718d6426b857a7335bd3f5ee2233eb40cee97a961e63799b93c33731d7f
+Identity-Mode: exact-map-v1
+Predecessor-Identity: tabloToR
+Review-State: reviewed
+Contract-State: locked
+Rationale: Current committed elimination baseline including validated scaling fixes; future source drift requires another explicit review.
+
+Schema: gemodelr-historical-evidence-v1
+Record-Id: protected-sparse-solver
+Category: protected-numerical-source
+Path: R/sparseSolver.R
+Region: identity-normalized-whole-file
+Digest-Algorithm: sha256
+Byte-Digest: eb78d3b8dac83fc9f4072afa862a8025384ec6d4eda41f07e8a6c7f1ecfedf1a
+Identity-Mode: exact-map-v1
+Predecessor-Identity: tabloToR
+Review-State: reviewed
+Contract-State: locked
+Rationale: Current committed sparse solver baseline including overflow-safe residual acceptance and cache fixes; tolerances and original numerical expectations remain fixed.
+
+Schema: gemodelr-historical-evidence-v1
+Record-Id: protected-sparse-schur-complement
+Category: protected-numerical-source
+Path: R/sparseSchurComplement.R
+Region: identity-normalized-whole-file
+Digest-Algorithm: sha256
+Byte-Digest: b5248416eaa5e87234e42ee2fc453a3bba7fb85e8d0d3e149d67d63ac87f6e24
+Identity-Mode: exact-map-v1
+Predecessor-Identity: tabloToR
+Review-State: reviewed
+Contract-State: locked
+Rationale: Current committed Schur baseline including stable residual scaling and regional transfer reuse; future source drift remains rejected.
+
+Schema: gemodelr-historical-evidence-v1
+Record-Id: gemodel-warning-region
+Category: protected-source-region
+Path: R/GEModel.R
+Region: lines-615-615
+Digest-Algorithm: sha256
+Byte-Digest: 45a7739bc30f057cdebd4f6d913ee158f851e15621c0bf9a9cbf59650f90dce0
+Identity-Mode: raw
+Predecessor-Identity: tabloToR
+Review-State: reviewed
+Contract-State: locked
+Rationale: The exact sparseMatrix construction line formerly at line 228 is now at line 615; its text remains unchanged and the numbered region is resealed.
